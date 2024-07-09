@@ -17,7 +17,7 @@ def create_users():
     for i in range(20):
         user = User(
             username = fake.user_name(),
-            password = fake.password()
+            password = "pass"
         )
         users.append(user)
         
