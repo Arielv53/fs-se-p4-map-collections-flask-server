@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from random import randint, choice as rc
 
 from faker import Faker
@@ -15,7 +17,7 @@ def create_users():
     for i in range(20):
         user = User(
             username = fake.user_name(),
-            password = fake.password()
+            password = "pass"
         )
         users.append(user)
         

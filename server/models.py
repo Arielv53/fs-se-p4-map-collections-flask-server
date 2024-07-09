@@ -54,7 +54,7 @@ class Collection(db.Model, SerializerMixin):
     collection_items = db.relationship('CollectionItem', back_populates='collection')
     
     # add serialization rules
-    serialize_rules = ['-users.collections']
+    serialize_rules = ['-user_collections.user', '-user_collections.collection']
 
 
 class CollectionItem(db.Model, SerializerMixin):
@@ -87,3 +87,4 @@ class User_collection(db.Model, SerializerMixin):
     collection = db.relationship('Collection', back_populates='user_collections')
     
     # add serialization rules
+    serialize_rules = ['-user.user_collections', '-collection.user_collections']
