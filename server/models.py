@@ -25,19 +25,32 @@ class User(db.Model, SerializerMixin):
 
     # add serialization rules
 
-
 class Collection(db.Model, SerializerMixin):
-    __tablename__ = "collections"
+    __tablename__ = 'collections'
 
     id = db.Column(db.Integer, primary_key=True)
-    genre = db.Column(db.String)
+    collection = db.Column(db.string)
+    location_id = db.Column(db.integer, ForeignKey('users.id'))
+
+     # add relationship
+    user_collections = db.relationship('User_collection', back_populates='collection', cascade='all, delete-orphan')
+
+    # add serialization rules
+
+
+class Location(db.Model, SerializerMixin):
+    __tablename__ = "locations"
+
+    id = db.Column(db.Integer, primary_key=True)
+    type = db.Column(db.String)
     title = db.Column(db.String)
-    description = db.Column(db.String)
-    reviews = db.Column(db.String)
-    user_id = db.Column(db.Integer, ForeignKey('users.id'), nullable=False)
+    address = db.Column(db.String)
+    comment = db.Column(db.String)
+    review = db.Column(db.Integer)
+    collection_id = db.Column(db.Integer, ForeignKey('collections.id'), nullable=False)
 
     # add relationship
-    user_collections = db.relationship('User_collection', back_populates='collection', cascade='all, delete-orphan')
+    
 
     # add serialization rules
 
@@ -54,3 +67,4 @@ class User_collection(db.Model, SerializerMixin):
     collection = db.relationshp('Collection', back_populates='user_collections')
     
     # add serialization rules
+
