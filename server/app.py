@@ -1,6 +1,6 @@
 from models import db, Collection, User, User_collection
 from flask_migrate import Migrate
-from flask import Flask, request, make_response, jsonify
+from flask import Flask, request, make_response, jsonify, session
 from flask_restful import Api, Resource
 import os
 
@@ -74,6 +74,37 @@ def collections_by_id(id):
         db.session.commit()
 
         return {}, 204
+    
+
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+
+    user = User.query.filter(User.username == data['username']).first()
+    if not user:
+        return {'error': 'login failed'}, 401
+    
+    session['user_id'] = user.id
+
+    return user.to_dict(), 200
+
+@app.route('/signup', methods=['POST'])
+def signup():
+    data = request.get_json()
+
+    user = User.query.filter(User.username == data['username']).first()
+    if user:
+        return {'error': 'username already exists'}, 400
+    
+    new_user = User(
+        username=data['username'],
+        password=data['password']
+    )
+
+    db.session.add(new_user)
+    db.session.commit()
+
+    return new_user.to_dict(), 201
 
 
 if __name__ == "__main__":

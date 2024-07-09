@@ -3,6 +3,8 @@ from sqlalchemy import MetaData, ForeignKey
 from sqlalchemy.orm import validates
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy_serializer import SerializerMixin
+from flask_bcrypt import Bcrypt
+from sqlalchemy.ext.hybrid import hybrid_property
 
 metadata = MetaData(
     naming_convention={
@@ -11,33 +13,62 @@ metadata = MetaData(
 )
 
 db = SQLAlchemy(metadata=metadata)
+bcrypt = Bcrypt()
 
 
 class User(db.Model, SerializerMixin):
     __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String, nullable=False)
+    username = db.Column(db.String, unique=True, nullable=False)
     password = db.Column(db.String, nullable=False)
+
+    @hybrid_property
+    def password(self):
+        return self._password
+    
+    @password.setter
+    def password(self, new_password):
+        hash = bcrypt.generate_password_hash(new_password.encode('utf-8'))
+        self._password = hash
+
+    def authenticate(self, password):
+        return bcrypt.check_password_hash(self._password, password.encode('utf-8'))
 
     # add relationship
     user_collections = db.relationship('User_collection', back_populates='user', cascade='all, delete-orphan')
 
     # add serialization rules
+    serialize_rules = ['-_password']
 
 
 class Collection(db.Model, SerializerMixin):
-    __tablename__ = "collections"
+    __tablename__ = 'collections'
 
     id = db.Column(db.Integer, primary_key=True)
-    genre = db.Column(db.String)
-    title = db.Column(db.String)
-    description = db.Column(db.String)
-    reviews = db.Column(db.String)
-    user_id = db.Column(db.Integer, ForeignKey('users.id'), nullable=False)
+    collection = db.Column(db.string)
+    collection_item_id = db.Column(db.integer, ForeignKey('users.id'))
+
+     # add relationship
+    user_collections = db.relationship('User_collection', back_populates='collection', cascade='all, delete-orphan')
+    collection_items = db.relationship('CollectionItem', back_populates='collection')
+    
+    # add serialization rules
+
+
+class CollectionItem(db.Model, SerializerMixin):
+    __tablename__ = "collection_items"
+
+    id = db.Column(db.Integer, primary_key=True)
+    type = db.Column(db.String)
+    name = db.Column(db.String)
+    address = db.Column(db.String)
+    comment = db.Column(db.String)
+    review = db.Column(db.Integer)
+    collection_id = db.Column(db.Integer, ForeignKey('collections.id'), nullable=False)
 
     # add relationship
-    user_collections = db.relationship('User_collection', back_populates='collection', cascade='all, delete-orphan')
+    collection = db.relationship('Collection', back_populates='collection_items')
 
     # add serialization rules
 
