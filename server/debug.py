@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from app import app
-from models import db, User, Collection, User_collection, Item
+from models import db, User, Collection, User_collection, CollectionItem
 
 if __name__ == '__main__':
     
