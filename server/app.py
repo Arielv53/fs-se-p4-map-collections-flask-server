@@ -108,6 +108,24 @@ def signup():
 
     return new_user.to_dict(), 201
 
+@app.route('/logout', methods=['DELETE'])
+def logout():
+    session.pop('user_id', None)
+    return {}, 204
+
+@app.route('/check_session')
+def check_session():
+    user_id = session.get('user_id')
+
+    if not user_id:
+        return {'error': 'authorization failed'}, 401
+    
+    user = User.query.filter(User.id == user_id).first()
+    if not user:
+        return {'error': 'authorization failed'}, 401
+    
+    return user.to_dict(), 200
+
 
 if __name__ == "__main__":
     app.run(port=5555, debug=True)
