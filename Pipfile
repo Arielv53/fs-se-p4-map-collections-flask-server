@@ -10,6 +10,11 @@ flask-restful = "*"
 sqlalchemy = "*"
 flask-sqlalchemy = "*"
 sqlalchemy-serializer = "*"
+faker = "*"
+python-dotenv = "*"
+flask-cors = "*"
+flask-bcrypt = "*"
+ipdb = "*"
 
 [dev-packages]
 

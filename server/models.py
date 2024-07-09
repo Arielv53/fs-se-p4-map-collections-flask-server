@@ -21,7 +21,7 @@ class User(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True, nullable=False)
-    password = db.Column(db.String, nullable=False)
+    _password = db.Column(db.String, nullable=False)
 
     @hybrid_property
     def password(self):
@@ -46,14 +46,15 @@ class Collection(db.Model, SerializerMixin):
     __tablename__ = 'collections'
 
     id = db.Column(db.Integer, primary_key=True)
-    collection = db.Column(db.string)
-    collection_item_id = db.Column(db.integer, ForeignKey('users.id'))
+    title = db.Column(db.String)
+    user_id = db.Column(db.Integer, ForeignKey('users.id'))
 
      # add relationship
     user_collections = db.relationship('User_collection', back_populates='collection', cascade='all, delete-orphan')
     collection_items = db.relationship('CollectionItem', back_populates='collection')
     
     # add serialization rules
+    serialize_rules = ['-users.collections']
 
 
 class CollectionItem(db.Model, SerializerMixin):
@@ -71,6 +72,7 @@ class CollectionItem(db.Model, SerializerMixin):
     collection = db.relationship('Collection', back_populates='collection_items')
 
     # add serialization rules
+    serialize_rules = ['-collection.collection_items']
 
 
 class User_collection(db.Model, SerializerMixin):
@@ -81,7 +83,7 @@ class User_collection(db.Model, SerializerMixin):
     collection_id = db.Column(db.Integer, ForeignKey('collections.id'), nullable=False)
 
     # add relationship
-    user = db.relationshp('User', back_populates='user_collections')
-    collection = db.relationshp('Collection', back_populates='user_collections')
+    user = db.relationship('User', back_populates='user_collections')
+    collection = db.relationship('Collection', back_populates='user_collections')
     
     # add serialization rules
