@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 
 from random import randint, choice as rc
-
 from faker import Faker
-
 from app import app
-from models import db, User, Collection
+from models import db, User, Collection, CollectionItem
 
 fake = Faker()
 
@@ -29,7 +27,7 @@ def create_collections():
     
     collections = []
         
-    for user_id in range(1, 20):
+    for user_id in range(1, 21):
         for i in range(20):
             collection = Collection(
                 title = fake.unique.word(),
@@ -42,7 +40,23 @@ def create_collections():
     
 
 def create_items():
-    pass
+    CollectionItem.query.delete()
+    
+    items = []
+    
+    for collection_id in range(1, 401):
+        for item in range(20):
+            collection_item = CollectionItem(
+                type = fake.word(),
+                name = fake.word(),
+                address = fake.street_address(),
+                comment = fake.paragraph(),
+                review = fake.paragraph(),
+                collection_id = collection_id,
+            )
+            items.append(collection_item)
+        db.session.add_all(items)
+        db.session.commit()
 
 def seed_database():
     create_users()
