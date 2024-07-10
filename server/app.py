@@ -51,14 +51,14 @@ def collections(user_id):
 
         return new_collection.to_dict(), 201
     
-@app.route('/<int:collection_id>/items', methods=['GET', 'POST', 'PATCH'])
+@app.route('/<int:collection_id>/items', methods=['GET', 'POST', 'PATCH', 'DELETE'])
 def all_items_by_collection_id(collection_id):
     items = CollectionItem.query.filter(CollectionItem.collection_id == collection_id).all()
     if request.method == 'GET':
         if not items:
             return {'error':'locations not found'}, 404
         return [i.to_dict() for i in items], 200
-    if request.method == 'POST':
+    elif request.method == 'POST':
         data = request.get_json()
         if not data:
             return {'error': 'invalid request'}, 400
@@ -77,6 +77,23 @@ def all_items_by_collection_id(collection_id):
         db.session.commit()
         
         return new_item.to_dict(), 201
+    
+    elif request.method == 'PATCH':
+        data = request.get_json()
+        for field in data:
+            try:
+                setattr(items, field, data.get(f'{field}'))
+            except ValueError as e:
+                return {'error': str(e)}, 400
+            
+        db.session.add(items)
+        db.session.commit()
+
+        return items.to_dict(), 200
+    
+    elif request.method == 'DELETE':
+        db.session.delete(items)
+        db.session.commit()
         
 
 @app.route("/collections/<int:id>", methods=['GET', 'DELETE', 'PATCH'])
