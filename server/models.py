@@ -41,12 +41,14 @@ class User(db.Model, SerializerMixin):
     # add serialization rules
     serialize_rules = ['-_password']
 
-
 class Collection(db.Model, SerializerMixin):
     __tablename__ = 'collections'
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String)
+    type = db.Column(db.String)
+    description = db.Column(db.String)
+    reviews = db.Column(db.String)
     user_id = db.Column(db.Integer, ForeignKey('users.id'))
 
      # add relationship

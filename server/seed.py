@@ -14,18 +14,36 @@ def create_users():
     
     users = []
     
+    count = 1
+    
     for i in range(20):
         user = User(
-            username = fake.user_name(),
+            username = f'Guest{count}',
             password = "pass"
         )
+        count += 1
         users.append(user)
         
     db.session.add_all(users)
     db.session.commit()
     
 def create_collections():
-    pass
+    Collection.query.delete()
+    
+    collections = []
+    
+    # count = 1
+     
+    for i in range(20):
+        collection = Collection(
+            title = fake.name(),
+            user_id = 1,
+        )
+        collections.append(collection)
+    
+    db.session.add_all(collections)
+    db.session.commit()
+    
 
 def create_items():
     pass

@@ -13,22 +13,23 @@ app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config['SECRET_KEY'] = os.environ['SECRET_KEY']
 
+
 migrate = Migrate(app, db)
 
 db.init_app(app)
 
 api = Api(app)
 
-CORS(app)
+CORS(app, supports_credentials=True)
 
 @app.route("/")
 def index():
     return "<h1>Phase 4 Project</h1>"
 
-@app.route("/collections", methods=['GET', 'POST'])
-def collections():
+@app.route("/<int:user_id>/collections", methods=['GET', 'POST'])
+def collections(user_id):
     if request.method == 'GET':
-        collections = Collection.query.all()
+        collections = Collection.query.filter(Collection.user_id == user_id).all()
         return [collection.to_dict() for collection in collections], 200
     
     elif request.method == 'POST':
@@ -74,8 +75,6 @@ def collections_by_id(id):
     elif request.method == 'DELETE':
         db.session.delete(collection)
         db.session.commit()
-
-        return {}, 204
     
 
 @app.route('/login', methods=['POST'])
@@ -83,7 +82,11 @@ def login():
     data = request.get_json()
 
     user = User.query.filter(User.username == data['username']).first()
+    
     if not user:
+        return {'error': 'login failed'}, 401
+    
+    if not user.authenticate(data['password']):
         return {'error': 'login failed'}, 401
     
     session['user_id'] = user.id
