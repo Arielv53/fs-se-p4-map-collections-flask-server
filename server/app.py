@@ -64,11 +64,11 @@ def all_items_by_collection_id(collection_id):
             return {'error': 'invalid request'}, 400
         try:
             new_item = CollectionItem(
-                'type': data.get('type'),
-                name: data.get('name'),
-                address: data.get('address'),
-                comment: data.get('comment'),
-                review: data.get('review')
+                type = data.get('type'),
+                name = data.get('name'),
+                address = data.get('address'),
+                comment = data.get('comment'),
+                review = data.get('review')
             )
         except ValueError as e:
             return {'error': str(e)}, 400
