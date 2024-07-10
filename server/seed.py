@@ -31,6 +31,7 @@ def create_collections():
         for i in range(20):
             collection = Collection(
                 title = fake.unique.word(),
+                group = fake.unique.word(),
                 user_id = user_id,
             )
             collections.append(collection)
@@ -47,7 +48,7 @@ def create_items():
     for collection_id in range(1, 401):
         for item in range(20):
             collection_item = CollectionItem(
-                type = fake.word(),
+                group = fake.word(),
                 name = fake.word(),
                 address = fake.street_address(),
                 comment = fake.paragraph(),

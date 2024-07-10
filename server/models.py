@@ -46,7 +46,7 @@ class Collection(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String)
-    type = db.Column(db.String)
+    group = db.Column(db.String)
     description = db.Column(db.String)
     reviews = db.Column(db.String)
     user_id = db.Column(db.Integer, ForeignKey('users.id'))
@@ -63,7 +63,7 @@ class CollectionItem(db.Model, SerializerMixin):
     __tablename__ = "collection_items"
 
     id = db.Column(db.Integer, primary_key=True)
-    type = db.Column(db.String)
+    group = db.Column(db.String)
     name = db.Column(db.String)
     address = db.Column(db.String)
     comment = db.Column(db.String)

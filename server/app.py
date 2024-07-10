@@ -51,7 +51,7 @@ def collections(user_id):
 
         return new_collection.to_dict(), 201
     
-@app.route('/<int:collection_id>/items', methods=['GET', 'POST', 'PATCH'])
+@app.route('/collection_items/<int:collection_id>', methods=['GET', 'POST', 'PATCH'])
 def all_items_by_collection_id(collection_id):
     items = CollectionItem.query.filter(CollectionItem.collection_id == collection_id).all()
     if request.method == 'GET':
@@ -64,11 +64,11 @@ def all_items_by_collection_id(collection_id):
             return {'error': 'invalid request'}, 400
         try:
             new_item = CollectionItem(
-                'type': data.get('type'),
-                name: data.get('name'),
-                address: data.get('address'),
-                comment: data.get('comment'),
-                review: data.get('review')
+                group = data.get('group'),
+                name = data.get('name'),
+                address = data.get('address'),
+                comment = data.get('comment'),
+                review = data.get('review')
             )
         except ValueError as e:
             return {'error': str(e)}, 400
