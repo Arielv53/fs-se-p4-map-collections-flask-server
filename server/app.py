@@ -1,4 +1,4 @@
-from models import db, Collection, User, User_collection
+from models import db, Collection, User, User_collection, CollectionItem
 from flask_migrate import Migrate
 from flask import Flask, request, make_response, jsonify, session
 from flask_restful import Api, Resource
@@ -33,7 +33,7 @@ def collections(user_id):
         return [collection.to_dict() for collection in collections], 200
     
     elif request.method == 'POST':
-        data = request.get_json()
+        data = request.get_json(user_id)
 
         try:
             new_collection = Collection(
@@ -41,7 +41,7 @@ def collections(user_id):
                 title=data.get('title'), 
                 description=data.get('description'), 
                 reviews=data.get('reviews'), 
-                user_id=data.get('user_id')
+                user_id=user_id
             )
         except ValueError as e:
             return {'error': str(e)}, 400
@@ -50,6 +50,33 @@ def collections(user_id):
         db.session.commit()
 
         return new_collection.to_dict(), 201
+    
+@app.route('/<int:collection_id>/items', methods=['GET', 'POST', 'PATCH'])
+def all_items_by_collection_id(collection_id):
+    items = CollectionItem.query.filter(CollectionItem.collection_id == collection_id).all()
+    if request.method == 'GET':
+        if not items:
+            return {'error':'locations not found'}, 404
+        return [i.to_dict() for i in items], 200
+    if request.method == 'POST':
+        data = request.get_json()
+        if not data:
+            return {'error': 'invalid request'}, 400
+        try:
+            new_item = CollectionItem(
+                'type': data.get('type'),
+                name: data.get('name'),
+                address: data.get('address'),
+                comment: data.get('comment'),
+                review: data.get('review')
+            )
+        except ValueError as e:
+            return {'error': str(e)}, 400
+        
+        db.session.add(new_item)
+        db.session.commit()
+        
+        return new_item.to_dict(), 201
         
 
 @app.route("/collections/<int:id>", methods=['GET', 'DELETE', 'PATCH'])
